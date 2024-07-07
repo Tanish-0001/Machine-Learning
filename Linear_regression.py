@@ -69,7 +69,7 @@ class LinearRegression:
 
         for epoch in range(self.max_iter):
             Y_pred = self.forward(X_train)
-            _loss = self.loss_function(Y_pred, yTrain)
+            _loss = self.loss_function(yTrain, Y_pred)
             dw = self.gradient(X_train, Y_pred, yTrain)
             self.parameters -= self.learning_rate * dw
 
@@ -83,28 +83,33 @@ class LinearRegression:
 
 
 x = np.array([[i] for i in range(10, 61)], dtype=np.float64)
-y = np.array([round(50 * np.log10(x)) for x in range(10, 61)], dtype=np.float64)
+y = np.array([(50 * np.log10(x)) for x in range(10, 61)], dtype=np.float64)
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+x_mean, x_std = np.mean(x), np.std(x)
+y_mean, y_std = np.mean(y), np.std(y)
+x_norm = (x - x_mean) / x_std
+y_norm = (y - y_mean) / y_std
 
-x_mean, x_std = np.mean(x_train), np.std(x_train)
-y_mean, y_std = np.mean(y_train), np.std(y_train)
+x_train, x_test, y_train, y_test = train_test_split(x_norm, y_norm, test_size=0.2, random_state=42)
 
-x_norm = (x_train - x_mean) / x_std
-y_norm = (y_train - y_mean) / y_std
-
-n_iter = 100
+n_iter = 500
 learning_rate = 0.01
-
 model = LinearRegression(n_iter, learning_rate)
-model.fit(x_norm, y_norm)
+model.fit(x_train, y_train)
+
+y_predicted = model.predict(x_test)
+
+plt.scatter(x_test, y_test, color='blue', label='Data points')
+plt.scatter(x_test, y_predicted, color='yellow', label='Predicted values')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Test data values vs predicted values')
+plt.legend()
+plt.show()
 
 params = model.parameters
 w = params[1] * (y_std / x_std)
 b = params[0] * y_std + y_mean - params[1] * (x_mean * y_std / x_std)
-
-# print("Final weights:", w)
-# print("Final bias:", b)
 
 plt.scatter(x, y, color='blue', label='Data points')
 x_curve = np.linspace(10, 61, 1000).reshape(-1, 1)
