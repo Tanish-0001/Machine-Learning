@@ -47,9 +47,6 @@ class LinearRegression:
         yTestPred = self.forward(XTest, self.parameters)
         return yTestPred
 
-    def return_parameters(self):
-        return self.parameters
-
 
 x = np.array([i for i in range(10, 61)], dtype=np.float64)
 y = np.array([round(50 * np.log10(x)) for x in range(10, 61)], dtype=np.float64)
@@ -68,7 +65,7 @@ learning_rate = 0.01
 model = LinearRegression(n_iter, learning_rate)
 model.fit(x_train, y_train)
 
-params = model.return_parameters()
+params = model.parameters
 w = params[1] * (y_std / x_std)
 b = params[0] * y_std + y_mean - params[1] * (x_mean * y_std / x_std)
 
