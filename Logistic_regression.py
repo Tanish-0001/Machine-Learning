@@ -45,7 +45,7 @@ class LogisticRegression:
             self.parameters += self.learning_rate * dw
 
             if epoch % (self.max_iter / 10) == 0:
-                print(f"epoch: {epoch}, loss: {_loss}")
+                print(f"epoch: {epoch}, loss: {_loss:.5f}")
 
     def predict(self, xTest):
         if len(xTest.shape) == 1:
@@ -56,12 +56,9 @@ class LogisticRegression:
         return yTestPred
 
 
-x = np.array([[i] for i in range(0, 51)])
-y = np.array([0 if (i < 24 or np.random.rand() > 0.8) else 1 for i in x])
-
-# data = load_breast_cancer()
-# x, y = data['data'], data['target']
-# x = StandardScaler().fit_transform(x)  # normalize the data
+data = load_breast_cancer()
+x, y = data['data'], data['target']
+x = StandardScaler().fit_transform(x)  # normalize the data
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
@@ -75,16 +72,3 @@ y_test_pred = model.predict(x_test)
 y_test_pred_class = np.array([1 if i > 0.5 else 0 for i in y_test_pred])  # threshold probability = 0.5
 accuracy = np.mean(y_test_pred_class == y_test)
 print(f'Accuracy: {accuracy * 100:.2f}%')
-
-
-x_curve = np.linspace(1, 50, 1000)
-y_curve = model.predict(x_curve)
-
-plt.scatter(x_train, y_train, color='blue', label='Data points')
-plt.plot(x_curve, y_curve, color='red', label='Prediction')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title('Data and Prediction')
-plt.xticks(np.arange(0, 51, 5))
-
-plt.show()
