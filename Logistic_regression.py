@@ -44,10 +44,7 @@ class LogisticRegression:
                 print(f"epoch: {epoch}, loss: {_loss:.5f}")
 
     def predict(self, xTest):
-        if len(xTest.shape) == 1:
-            XTest = np.c_[np.ones(xTest.shape[0], dtype=xTest.dtype), xTest]
-        else:
-            XTest = np.insert(xTest, 0, 1, axis=1)
+        XTest = np.insert(xTest, 0, 1, axis=1)
         yTestPred = self.forward(XTest, self.parameters)
         return yTestPred
 
