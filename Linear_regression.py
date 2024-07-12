@@ -6,9 +6,7 @@ from sklearn.model_selection import train_test_split
 class LinearRegression:
     """
     A simple linear regression model
-
     ...
-
     Attributes
     ----------
     max_iter : int
@@ -60,7 +58,7 @@ class LinearRegression:
         ----------
         xTrain : numpy ndarray with shape (m, num_features) where m is the number of training examples
             The training set
-        yTrain: numpy ndarray with shape (m,) where m in the number of training examples
+        yTrain : numpy ndarray with shape (m,) where m in the number of training examples
             The corresponding labels
         """
 
