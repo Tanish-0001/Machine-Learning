@@ -14,10 +14,9 @@ class LogisticRegression:
     @staticmethod
     def sigmoid(z):
         return 1 / (1 + np.exp(-z))
-
-    @staticmethod
-    def forward(X, Theta):
-        return LogisticRegression.sigmoid(np.dot(X, Theta))
+        
+    def forward(self, X):
+        return self.sigmoid(np.dot(X, self.parameters))
 
     @staticmethod
     def loss_function(yPred, yTrue):
@@ -32,11 +31,8 @@ class LogisticRegression:
         return dW
 
     def fit(self, xTrain, yTrain):
-        self.parameters = np.random.rand(xTrain.shape[1] + 1) if len(xTrain.shape) > 1 else np.random.rand(2)
-        if len(xTrain.shape) == 1:
-            XTrain = np.c_[np.ones(xTrain.shape[0], dtype=xTrain.dtype), xTrain]
-        else:
-            XTrain = np.insert(xTrain, 0, 1, axis=1)
+        self.parameters = np.random.rand(xTrain.shape[1] + 1)
+        XTrain = np.insert(xTrain, 0, 1, axis=1)
 
         for epoch in range(self.max_iter):
             Y_pred = self.forward(XTrain, self.parameters)
@@ -58,7 +54,7 @@ class LogisticRegression:
 
 data = load_breast_cancer()
 x, y = data['data'], data['target']
-x = StandardScaler().fit_transform(x)  # normalize the data
+x = StandardScaler().fit_transform(x)
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
