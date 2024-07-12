@@ -22,13 +22,13 @@ class LogisticRegression:
     @staticmethod
     def loss_function(yPred, yTrue):
         epsilon = 1e-15
-        yPred = np.clip(yPred, epsilon, 1 - epsilon)  # to prevent log(0) when y_pred == 0
+        yPred = np.clip(yPred, epsilon, 1 - epsilon)
         return -np.mean(yTrue * np.log(yPred) + (1 - yTrue) * np.log(1 - yPred))
 
     @staticmethod
     def gradient(X, yPred, yTrue):
         m = yTrue.shape[0]
-        dW = np.dot(X.T, (yTrue - yPred)) / m  # mean error
+        dW = np.dot(X.T, (yTrue - yPred)) / m
         return dW
 
     def fit(self, xTrain, yTrain):
