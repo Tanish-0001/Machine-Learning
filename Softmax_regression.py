@@ -42,7 +42,7 @@ class SoftmaxRegression:
             self.parameters -= self.learning_rate * dw
 
             if epoch % (self.max_iter // 10) == 0:
-                print(f"Epoch: {epoch}, Loss: {loss}")
+                print(f"Epoch: {epoch}, Loss: {loss:.4f}")
 
     def predict(self, X):
         X = np.insert(X, 0, 1, axis=1)
@@ -73,4 +73,4 @@ for pred, true in zip(y_test_pred, y_test):
     elif pred == 0 and true == 1:
         false_negative += 1
 
-print(f'Recall: {true_positive / (true_positive + false_negative)}')
+print(f'Recall: {true_positive / (true_positive + false_negative):.3f}')
