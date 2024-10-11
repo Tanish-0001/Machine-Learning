@@ -1,53 +1,51 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+from sympy.stats.sampling.sample_numpy import numpy
+
+numpy.random.seed(0)
 
 
 class LinearRegression:
-    """
-    A simple linear regression model
-    ...
-    Attributes
-    ----------
-    max_iter : int
-        Maximum number of iterations used for gradient descent
-    learning_rate : float
-        Learning rate
+    def __init__(self, max_iter=1000, learning_rate=1e-3, regularization=False, lambda_=0):
+        """
+        Parameters
+        ----------
+        max_iter : int
+            The maximum number of iterations the training loop runs for, default 1000
+        learning_rate : float
+            The learning rate, default 0.001
+        regularization : bool
+            Whether to use regularization, default False
+        lambda_ : float
+            The regularization parameter, default = 0
+        """
 
-    Methods
-    -------
-    forward(X)
-        Computes the forward pass
-
-    loss_function(yTrue, yPred)
-        Computes the mean squared error
-
-    gradient(X, yTrue, yPred)
-        Computes backward pass to update model parameters
-
-    fit(xTrain, yTrain)
-        Fits model to training data
-
-    predict(xTest)
-        Makes a prediction using the trained model
-    """
-
-    def __init__(self, max_iter, learning_rate):
         self.max_iter = max_iter
         self.learning_rate = learning_rate
         self.parameters = None
 
+        self.regularization = regularization
+        self.lambda_ = lambda_
+
     def forward(self, X):
         return np.dot(X, self.parameters)
 
-    @staticmethod
-    def loss_function(yTrue, yPred):
-        return np.mean(np.square(yTrue - yPred))
+    def loss_function(self, yTrue, yPred):
+        reg_term = 0
+        if self.regularization:
+            reg_term = self.lambda_ * np.sum(np.square(self.parameters))
 
-    @staticmethod
-    def gradient(X, yTrue, yPred):
+        return np.mean(np.square(yTrue - yPred)) + reg_term
+
+    def gradient(self, X, yTrue, yPred):
+
         m = yTrue.shape[0]
-        dW = -2 * np.dot(X.T, (yPred - yTrue)) / m
+        dW = (-2 * np.dot(X.T, (yPred - yTrue)) / m)
+        if self.regularization:
+            dW += 2 * self.lambda_ * self.parameters
         return dW
 
     def fit(self, xTrain, yTrain):
@@ -56,7 +54,7 @@ class LinearRegression:
 
         Parameters
         ----------
-        xTrain : numpy ndarray with shape (m, num_features) where m is the number of training examples
+        xTrain : numpy array with shape (m, num_features) where m is the number of training examples
             The training set
         yTrain : numpy ndarray with shape (m,) where m in the number of training examples
             The corresponding labels
@@ -67,53 +65,43 @@ class LinearRegression:
 
         for epoch in range(self.max_iter):
             Y_pred = self.forward(X_train)
-            _loss = self.loss_function(yTrain, Y_pred)
+            _loss = self.loss_function(Y_pred, yTrain)
             dw = self.gradient(X_train, Y_pred, yTrain)
             self.parameters -= self.learning_rate * dw
 
             if epoch % (self.max_iter / 10) == 0:
-                print(f"epoch: {epoch}, loss: {_loss}")
+                print(f"epoch: {epoch}, loss: {_loss:.5f}")
 
     def predict(self, xTest):
+        """
+        Parameters
+        ----------
+        xTest : numpy array
+            The input data
+
+        Returns
+        -------
+        output : numpy array
+            The predicted values
+        """
         XTest = np.insert(xTest, 0, 1, axis=1)
         yTestPred = self.forward(XTest)
         return yTestPred
 
 
-x = np.array([[i] for i in range(10, 61)], dtype=np.float64)
-y = np.array([(50 * np.log10(x)) for x in range(10, 61)], dtype=np.float64)
+x, y = datasets.make_regression(n_samples=100, n_features=1, noise=15)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
-x_mean, x_std = np.mean(x), np.std(x)
-y_mean, y_std = np.mean(y), np.std(y)
-x_norm = (x - x_mean) / x_std
-y_norm = (y - y_mean) / y_std
-
-x_train, x_test, y_train, y_test = train_test_split(x_norm, y_norm, test_size=0.2, random_state=42)
-
-n_iter = 500
+n_iter = 300
 learning_rate = 0.01
+
 model = LinearRegression(n_iter, learning_rate)
 model.fit(x_train, y_train)
 
-y_predicted = model.predict(x_test)
-
-plt.scatter(x_test, y_test, color='blue', label='Data points')
-plt.scatter(x_test, y_predicted, color='yellow', label='Predicted values')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Test data values vs predicted values')
-plt.legend()
-plt.show()
-
-params = model.parameters
-w = params[1] * (y_std / x_std)
-b = params[0] * y_std + y_mean - params[1] * (x_mean * y_std / x_std)
-
 plt.scatter(x, y, color='blue', label='Data points')
-x_curve = np.linspace(10, 61, 1000).reshape(-1, 1)
-plt.plot(x_curve, w * x_curve + b, color='red', label='Fitted line')
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Data Points and Line of Best Fit')
+plt.plot(x, model.predict(x), 'r', label='Prediction')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Data Points and Fitted Line')
 plt.legend()
 plt.show()
