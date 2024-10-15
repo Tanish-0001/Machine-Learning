@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn import datasets
-from sklearn.preprocessing import StandardScaler
 
 np.random.seed(0)
 
@@ -88,7 +87,7 @@ class LinearRegression:
         return yTestPred
 
 
-x, y = datasets.make_regression(n_samples=100, n_features=1, noise=15)
+x, y = datasets.make_regression(n_samples=100, n_features=1, noise=5)
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
 n_iter = 300
