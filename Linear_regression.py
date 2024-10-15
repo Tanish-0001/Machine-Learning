@@ -3,9 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn import datasets
 from sklearn.preprocessing import StandardScaler
-from sympy.stats.sampling.sample_numpy import numpy
 
-numpy.random.seed(0)
+np.random.seed(0)
 
 
 class LinearRegression:
